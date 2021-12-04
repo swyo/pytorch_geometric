@@ -18,10 +18,10 @@ parser = argparse.ArgumentParser()
 parser.add_argument('--use_normalization', action='store_true')
 args = parser.parse_args()
 
-loader = GraphSAINTRandomWalkSampler(data, batch_size=6000, walk_length=2,
+loader = GraphSAINTRandomWalkSampler(data, batch_size=3000, walk_length=2,
                                      num_steps=5, sample_coverage=100,
                                      save_dir=dataset.processed_dir,
-                                     num_workers=4)
+                                     num_workers=2)
 
 
 class Net(torch.nn.Module):

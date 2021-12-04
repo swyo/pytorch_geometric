@@ -1,22 +1,30 @@
 import os.path as osp
 
 import torch
-import torch.nn.functional as F
 from tqdm import tqdm
-from torch_geometric.datasets import Reddit
-from torch_geometric.loader import NeighborSampler
+import torch.nn.functional as F
+import torch_geometric.transforms as T
 from torch_geometric.nn import SAGEConv
+from torch_geometric.loader import NeighborSampler
+from torch_geometric.datasets import Reddit, Planetoid
 
-path = osp.join(osp.dirname(osp.realpath(__file__)), '..', 'data', 'Reddit')
-dataset = Reddit(path)
+dataset = 'Cora'
+# dataset = 'Reddit'
+path = osp.join(osp.dirname(osp.realpath(__file__)), '..', 'data', dataset)
+if dataset == 'Reddit':
+    dataset = Reddit(path)
+elif dataset == 'Cora':
+    dataset = Planetoid(path, 'Cora', transform=T.NormalizeFeatures())
+else:
+    print("Not supported dataset")
 data = dataset[0]
 
 train_loader = NeighborSampler(data.edge_index, node_idx=data.train_mask,
-                               sizes=[25, 10], batch_size=1024, shuffle=True,
+                               sizes=[25, 10], batch_size=64, shuffle=True,
                                num_workers=12)
 subgraph_loader = NeighborSampler(data.edge_index, node_idx=None, sizes=[-1],
-                                  batch_size=1024, shuffle=False,
-                                  num_workers=12)
+                                  batch_size=32, shuffle=False,
+                                  num_workers=24)
 
 
 class SAGE(torch.nn.Module):
